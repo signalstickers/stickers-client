@@ -6,14 +6,14 @@
   "contributors": [
     {
       "name": "Romain Ricard",
-      "email": "foo@bar.com"
+      "url": "https://romainricard.fr/"
     },
     {
       "name": "sticker201"
     },
     {
       "name": "Joshua Martin",
-      "email": "joshua@joshua.dev"
+      "url": "https://joshua.dev"
     }
   ],
   "main": "dist/index.js",
