@@ -1,0 +1,12 @@
+{
+  "extends": "@darkobits/ts-unified/dist/config/tslint.json",
+  "rules": {
+    "no-redundant-jsdoc": false,
+
+    /**
+     * This package makes heavy use of APIs that return "PromiseLike" objects,
+     * which the linter assumes are not await-able.
+     */
+    "await-promise": false
+  }
+}

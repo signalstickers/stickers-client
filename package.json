@@ -1,0 +1,44 @@
+{
+  "name": "@signalstickers/stickers-client",
+  "version": "0.1.0",
+  "description": "Utilities for interacting with the Signal Sticker API for the browser and Node.",
+  "license": "WTFPL",
+  "contributors": [
+    {
+      "name": "Romain Ricard",
+      "email": "foo@bar.com"
+    },
+    {
+      "name": "sticker201"
+    },
+    {
+      "name": "Joshua Martin",
+      "email": "joshua@joshua.dev"
+    }
+  ],
+  "main": "dist/index.js",
+  "browser": "dist/browser.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "nps test",
+    "test:watch": "nps test.watch",
+    "build": "nps build",
+    "bump": "nps bump",
+    "prepare": "nps prepare"
+  },
+  "dependencies": {
+    "axios": "^0.19.1",
+    "js-crypto-hkdf": "^0.7.3",
+    "protobufjs": "^6.8.8"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/runtime": "^7.8.3",
+    "@darkobits/ts-unified": "^4.0.0-beta.2",
+    "@types/axios": "^0.14.0",
+    "@types/jest": "^24.9.0",
+    "@types/protobufjs": "^6.0.0"
+  }
+}

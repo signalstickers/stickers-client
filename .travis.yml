@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - 12
+script:
+  - npx nps build
+  - npx nps test.coverage
+after_success:
+  - npx codacy-coverage -v < ./coverage/lcov.info
