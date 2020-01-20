@@ -39,12 +39,19 @@ indefinitely. As such, this package implements a basic in-memory cache. This
 reduces the amount of superfluous networks requests made. This package has the
 following named exports:
 
-#### `getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest>`
+```ts
+getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest>
+```
 
 Provided a sticker pack ID and its key, returns a promise that resolves with the
 sticker pack's decrypted manifest.
 
-#### `getStickerInPack(id: string, key: string, stickerId: number): Promise<Uint8Array>`
+<a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
+
+```ts
+getStickerInPack(id: string, key: string, stickerId: number, encoding = 'raw'): Promise<Uint8Array>
+getStickerInPack(id: string, key: string, stickerId: number, encoding = 'base64'): Promise<string>
+```
 
 Provided a sticker pack ID, its key, and a sticker ID, returns a promise that
 resolves with the raw WebP image data for the indicated sticker.
@@ -56,7 +63,54 @@ Alternatively, if this is set to `base64`, a data-URI string will be returned
 instead. This string can be used directly as `src` attribute in an `<img>` tag,
 for example.
 
-#### `getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string>`
+<a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
+
+```
+getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string>
+```
 
 Provided a sticker pack ID, its key, and sticker ID, returns the emoji
 associated with the sticker.
+
+<a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
+
+**Example**
+
+In this example, we'll create a simple React component that will render a single
+sticker. It will accept a sticker pack's ID and key as well as the ID of the
+sticker to render as props. We will use a one-time effect when the component
+mounts to fetch the image.
+
+Note that this package caches responses from Signal, so we don't need to add any
+additional logic to store the result of `getStickerInPack` outside the
+component's state. If it is ever dismounted and remounted in the future with the
+same props, no additional network requests will be made.
+
+```tsx
+import React, {useEffect, useState} from 'react';
+import {getStickerInPack} from '@signalstickers/stickers-client';
+
+export interface Props {
+  packId: string;
+  packKey: string;
+  stickerId: number;
+}
+
+const StickerComponent: React.FunctionComponent<Props> = ({packId, packKey, stickerId}) => {
+  const [stickerData, setStickerData] = useState();
+
+  useEffect(() => {
+    getStickerInPack(packId, packKey, stickerId, 'base64').then(setStickerData);
+  }, []);
+
+  if (!stickerData) {
+    return null;
+  }
+
+  return (
+    <img src={stickerData} />
+  );
+};
+
+export default StickerComponent;
+```
