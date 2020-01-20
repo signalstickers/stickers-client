@@ -65,7 +65,7 @@ for example.
 
 <a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
 
-```
+```ts
 getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string>
 ```
 
