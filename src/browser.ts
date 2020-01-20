@@ -7,7 +7,10 @@ const {
   getStickerPackManifest,
   getStickerInPack,
   getEmojiForSticker
-} = StickerClientFactory({decryptManifest});
+} = StickerClientFactory({
+  decryptManifest,
+  base64Encoder: btoa
+});
 
 export {
   getStickerPackManifest,

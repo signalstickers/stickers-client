@@ -1,25 +1,15 @@
-// ===== Crypto Utilities ======================================================
+// ===== Manifest Decryption (Node) =========================================
 
 /**
- * This module contains various functions that aid in the decryption of sticker
- * pack data from Signal. Browser detection for browser support of the
- * SubtleCrypto API should probably be added at some point.
- *
- * TODO: This module, along with signal.ts, should be refactored-out into a
- * separate NPM package with separate browser/Node imports, which will allow us
- * to make this code a bit cleaner. For now, this let's us use a consistent API
- * for both environments.
- *
- * See: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto
+ * This module is responsible for decrypting protocol buffer responses from
+ * Signal in Node using the 'crypto' module.
  */
 import crypto from 'crypto';
 import hkdf from 'js-crypto-hkdf';
 
 
 /**
- * [private]
- *
- * See: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey
+ * @private
  */
 async function deriveKeys(encodedKey: string) {
   const hash = 'SHA-256';
@@ -35,7 +25,7 @@ async function deriveKeys(encodedKey: string) {
 
 /**
  * Decrypts a manifest returned from the Signal API using a sticker pack's
- * pack key, provided from stickers.yml.
+ * key.
  */
 export default async function decryptManifest(encodedKey: string, rawManifest: any) {
   const [aesKey, hmacKey] = await deriveKeys(encodedKey);
@@ -44,7 +34,6 @@ export default async function decryptManifest(encodedKey: string, rawManifest: a
   const cipherTextBody = rawManifest.slice(16, rawManifest.length - 32);
   const theirMac = rawManifest.slice(rawManifest.byteLength - 32, rawManifest.byteLength).toString('hex');
   const combinedCipherText = rawManifest.slice(0, rawManifest.byteLength - 32);
-
 
   const computedMac = crypto.createHmac('sha256', hmacKey as any).update(combinedCipherText).digest('hex');
 

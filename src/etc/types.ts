@@ -42,6 +42,7 @@ export interface StickerPackManifest {
  */
 export interface StickerPackClientOptions {
   decryptManifest(key: string, encryptedManifest: string): Promise<any>;
+  base64Encoder(input: string): string;
 }
 
 export interface StickerPackClient {

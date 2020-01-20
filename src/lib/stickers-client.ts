@@ -13,14 +13,14 @@ import {StickerPackManifest, StickerPackClient, StickerPackClientOptions} from '
 /**
  * Provided a StickerClientOptions object, returns a StickerClient.
  *
- * This is implemented as a factory function so that we can inject the correct
- * cryptography library for the browser or Node.
+ * The options for this factory constitute functionality that diverges between
+ * Node and the browser, and is provided by each entrypoint accordingly.
  */
-export default function StickerPackClientFactory({decryptManifest}: StickerPackClientOptions): StickerPackClient {
+export default function StickerPackClientFactory({decryptManifest, base64Encoder}: StickerPackClientOptions): StickerPackClient {
   // ----- Members -------------------------------------------------------------
 
   /**
-   * [private]
+   * @private
    *
    * gRPC type definition for Signal's sticker pack manifests.
    */
@@ -134,7 +134,7 @@ export default function StickerPackClientFactory({decryptManifest}: StickerPackC
       return rawImageData;
     }
 
-    const base64Data = btoa(String.fromCharCode.apply(undefined, rawImageData));
+    const base64Data = base64Encoder(String.fromCharCode(...rawImageData));
     return `data:image/webp;base64,${base64Data}`;
   }
 

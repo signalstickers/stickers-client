@@ -1,14 +1,8 @@
-// ===== Crypto Utilities ======================================================
+// ===== Manifest Decryption (Browser) =========================================
 
 /**
- * This module contains various functions that aid in the decryption of sticker
- * pack data from Signal. Browser detection for browser support of the
- * SubtleCrypto API should probably be added at some point.
- *
- * TODO: This module, along with signal.ts, should be refactored-out into a
- * separate NPM package with separate browser/Node imports, which will allow us
- * to make this code a bit cleaner. For now, this let's us use a consistent API
- * for both environments.
+ * This module is responsible for decrypting protocol buffer responses from
+ * Signal in the browser using the SubtleCrypto API.
  *
  * See: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto
  */
@@ -70,7 +64,7 @@ async function deriveKeys(encodedKey: string) {
 
 /**
  * Decrypts a manifest returned from the Signal API using a sticker pack's
- * pack key, provided from stickers.yml.
+ * key.
  */
 export default async function decryptManifest(encodedKey: string, rawManifest: any) {
   const keys = await deriveKeys(encodedKey);
