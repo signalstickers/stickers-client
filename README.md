@@ -35,22 +35,18 @@ use it in the browser, make sure you are using a bundler that supports the
 
 Because sticker packs are immutable, responses from Signal can be safely cached
 indefinitely. As such, this package implements a basic in-memory cache. This
-reduces the amount of superfluous networks requests made. This package has the
-following named exports:
+reduces the amount of superfluous networks requests made.
 
-```ts
-getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest>
-```
+This package has the following named exports:
+
+#### `getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest>`
 
 Provided a sticker pack ID and its key, returns a promise that resolves with the
 sticker pack's decrypted manifest.
 
 <a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
 
-```ts
-getStickerInPack(id: string, key: string, stickerId: number, encoding = 'raw'): Promise<Uint8Array>
-getStickerInPack(id: string, key: string, stickerId: number, encoding = 'base64'): Promise<string>
-```
+#### `getStickerInPack(id: string, key: string, stickerId: number, encoding: 'raw' | 'base64'): Promise<Uint8Array | string>`
 
 Provided a sticker pack ID, its key, and a sticker ID, returns a promise that
 resolves with the raw WebP image data for the indicated sticker.
@@ -64,9 +60,7 @@ for example.
 
 <a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
 
-```ts
-getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string>
-```
+#### `getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string>`
 
 Provided a sticker pack ID, its key, and sticker ID, returns the emoji
 associated with the sticker.
