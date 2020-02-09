@@ -81,7 +81,7 @@ same props, no additional network requests will be made.
 
 ```tsx
 import React, {useEffect, useState} from 'react';
-import {getStickerInPack} from '@signalstickers/stickers-client';
+import {getStickerInPack, getEmojiForSticker} from '@signalstickers/stickers-client';
 
 export interface Props {
   packId: string;
@@ -91,17 +91,19 @@ export interface Props {
 
 const StickerComponent: React.FunctionComponent<Props> = ({packId, packKey, stickerId}) => {
   const [stickerData, setStickerData] = useState();
+  const [stickerEmoji, setStickerEmoji] = useState();
 
   useEffect(() => {
     getStickerInPack(packId, packKey, stickerId, 'base64').then(setStickerData);
+    getEmojiForSticker(packId, packKey, stickerId).then(setStickerEmoji);
   }, []);
 
-  if (!stickerData) {
+  if (!stickerData || !stickerEmoji) {
     return null;
   }
 
   return (
-    <img src={stickerData} />
+    <img src={stickerData} alt={stickerEmoji} />
   );
 };
 
