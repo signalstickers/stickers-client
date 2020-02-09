@@ -1,12 +1,11 @@
 <a href="#top" id="top">
-  <img src="https://user-images.githubusercontent.com/441546/72718837-8b9a5000-3b2b-11ea-895c-01658b3758f6.png" style="max-width: 100%;"></<img>
+  <img src="https://user-images.githubusercontent.com/441546/74095573-d1519500-4aa7-11ea-9aac-6d27301b2612.png" style="max-width: 100%;"></<img>
 </a>
 <p align="center">
-  <a href="https://www.npmjs.com/package/@signalstickers/stickers-client"><img src="https://img.shields.io/npm/v/@signalstickers/stickers-client.svg?style=flat-square"></a>
-  <a href="https://travis-ci.com/signalstickers/stickers-client"><img src="https://img.shields.io/travis/com/signalstickers/stickers-client?style=flat-square"></a>
-  <!-- <a href="https://www.codacy.com/app/signalstickers/stickers-client"><img src="https://img.shields.io/codacy/coverage/837e180bb3484ac4acdee09d3e9bb45a.svg?style=flat-square"></a> -->
-  <a href="https://david-dm.org/signalstickers/stickers-client"><img src="https://img.shields.io/david/signalstickers/stickers-client.svg?style=flat-square"></a>
-  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/conventional%20commits-1.0.0-FB5E85.svg?style=flat-square"></a>
+  <a href="https://www.npmjs.com/package/@signalstickers/stickers-client"><img src="https://img.shields.io/npm/v/@signalstickers/stickers-client.svg?"></a>
+  <a href="https://travis-ci.com/signalstickers/stickers-client"><img src="https://img.shields.io/travis/com/signalstickers/stickers-client?"></a>
+  <a href="https://david-dm.org/signalstickers/stickers-client"><img src="https://img.shields.io/david/signalstickers/stickers-client.svg?"></a>
+  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/conventional%20commits-1.0.0-FB5E85.svg?"></a>
 </p>
 
 # Rationale
