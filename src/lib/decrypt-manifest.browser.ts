@@ -1,6 +1,6 @@
-// ===== Manifest Decryption (Browser) =========================================
-
 /**
+ * ===== Manifest Decryption (Browser) =========================================
+ *
  * This module is responsible for decrypting protocol buffer responses from
  * Signal in the browser using the SubtleCrypto API.
  *

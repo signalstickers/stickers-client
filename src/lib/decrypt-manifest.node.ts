@@ -1,6 +1,6 @@
-// ===== Manifest Decryption (Node) =========================================
-
 /**
+ * ===== Manifest Decryption (Node) ============================================
+ *
  * This module is responsible for decrypting protocol buffer responses from
  * Signal in Node using the 'crypto' module.
  */
