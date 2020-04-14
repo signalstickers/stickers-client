@@ -1,7 +1,7 @@
 // ----- Signal API Responses --------------------------------------------------
 
 /**
- * Shape of an individual sticker in a sticker pack response.
+ * Shape of an individual sticker in a sticker pack manifest response.
  */
 export interface Sticker {
   id: number;

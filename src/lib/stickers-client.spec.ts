@@ -1,38 +1,33 @@
-/**
- * @jest-environment jsdom
- */
 import axios, {AxiosRequestConfig} from 'axios';
 import {v4 as uuid} from 'uuid';
 
-import {
-  getStickerPackManifest,
-  getStickerInPack,
-  getEmojiForSticker
-} from '../browser';
+import StickersClientFactory, {StickersClient} from './stickers-client';
 
-import decryptManifest from 'lib/decrypt-manifest.browser';
 
-jest.mock('axios', () => {
-  return jest.fn(async (requestConfig: AxiosRequestConfig) => {
-    if (requestConfig.url?.match(/manifest\.proto/g)) {
-      return Promise.resolve({data: '___RAW_MANIFEST___'});
-    }
+jest.mock('axios', () => jest.fn(async (requestConfig: AxiosRequestConfig) => {
+  if (requestConfig.url?.match(/manifest\.proto/g)) {
+    return Promise.resolve({data: '___RAW_MANIFEST___'});
+  }
 
-    if (requestConfig.url?.match(/\/full\//g)) {
-      return Promise.resolve({data: '___RAW_STICKER_DATA___'});
-    }
+  if (requestConfig.url?.match(/\/full\//g)) {
+    return Promise.resolve({data: '___RAW_STICKER_DATA___'});
+  }
 
-    return Promise.reject();
+  return Promise.reject();
+}));
+
+
+describe('Stickers Client (Node)', () => {
+  const decryptManifest = jest.fn(async () => '___DECRYPTED_MANIFEST___');
+  let client: StickersClient;
+
+  beforeEach(() => {
+    client = StickersClientFactory({
+      decryptManifest,
+      base64Encoder:  input => Buffer.from(input).toString('base64')
+    });
   });
-});
 
-jest.mock('lib/decrypt-manifest.browser', () => {
-  return jest.fn((decodeKey: string, rawManifest: string) => {
-    return '___DECRYPTED_MANIFEST___';
-  });
-});
-
-describe('Stickers Client (Browser)', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -42,7 +37,7 @@ describe('Stickers Client (Browser)', () => {
     const PACK_KEY = uuid();
 
     it('should query Signal and use the platform-specific decryptManifest implementation', async () => {
-      const result = await getStickerPackManifest(PACK_ID, PACK_KEY);
+      const result = await client.getStickerPackManifest(PACK_ID, PACK_KEY);
 
       expect(axios).toHaveBeenCalledWith({
         method: 'GET',
@@ -56,14 +51,16 @@ describe('Stickers Client (Browser)', () => {
     });
 
     it('should cache results based on provided parameters', async () => {
-      await getStickerPackManifest(PACK_ID, PACK_KEY);
       expect(axios).not.toHaveBeenCalled();
 
-      await getStickerPackManifest(PACK_ID, '___NEW_PACK_KEY___');
+      await client.getStickerPackManifest(PACK_ID, PACK_KEY);
       expect(axios).toHaveBeenCalledTimes(1);
 
-      await getStickerPackManifest('___OTHER_PACK_ID___', PACK_KEY);
+      await client.getStickerPackManifest(PACK_ID, '___NEW_PACK_KEY___');
       expect(axios).toHaveBeenCalledTimes(2);
+
+      await client.getStickerPackManifest('___OTHER_PACK_ID___', PACK_KEY);
+      expect(axios).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -73,7 +70,7 @@ describe('Stickers Client (Browser)', () => {
     const STICKER_ID = 42;
 
     it('should query Signal and use the platform-specific decryptManifest implementation', async () => {
-      const result = await getStickerInPack(PACK_ID, PACK_KEY, STICKER_ID, 'raw');
+      const result = await client.getStickerInPack(PACK_ID, PACK_KEY, STICKER_ID, 'raw');
 
       expect(axios).toHaveBeenCalledWith({
         method: 'GET',
@@ -87,17 +84,22 @@ describe('Stickers Client (Browser)', () => {
     });
 
     it('should cache results based on provided parameters', async () => {
-      await getStickerInPack(PACK_ID, PACK_KEY, STICKER_ID);
       expect(axios).not.toHaveBeenCalled();
 
-      await getStickerInPack('___OTHER_PACK_ID___', PACK_KEY, STICKER_ID);
+      await client.getStickerInPack(PACK_ID, PACK_KEY, STICKER_ID);
       expect(axios).toHaveBeenCalledTimes(1);
 
-      await getStickerInPack(PACK_ID, '___OTHER_PACK_KEY___', STICKER_ID);
+      await client.getStickerInPack(PACK_ID, PACK_KEY, STICKER_ID);
+      expect(axios).toHaveBeenCalledTimes(1);
+
+      await client.getStickerInPack('___OTHER_PACK_ID___', PACK_KEY, STICKER_ID);
       expect(axios).toHaveBeenCalledTimes(2);
 
-      await getStickerInPack(PACK_ID, PACK_KEY, 1);
+      await client.getStickerInPack(PACK_ID, '___OTHER_PACK_KEY___', STICKER_ID);
       expect(axios).toHaveBeenCalledTimes(3);
+
+      await client.getStickerInPack(PACK_ID, PACK_KEY, 1);
+      expect(axios).toHaveBeenCalledTimes(4);
     });
   });
 
@@ -108,7 +110,7 @@ describe('Stickers Client (Browser)', () => {
 
     it('should query Signal', async () => {
       try {
-        await getEmojiForSticker(PACK_ID, PACK_KEY, STICKER_ID);
+        await client.getEmojiForSticker(PACK_ID, PACK_KEY, STICKER_ID);
       } catch (err) {
         // We're going to encounter an error here because we're returning an
         // empty sticker pack.
