@@ -7,7 +7,16 @@
 import axios from 'axios';
 import protobuf from 'protobufjs';
 import StickersProto from 'etc/stickers-proto';
-import {StickerPackManifest, StickerPackClient, StickerPackClientOptions} from 'etc/types';
+import {StickerPackManifest} from 'etc/types';
+
+
+/**
+ * Options object accepted by StickerClientFactory.
+ */
+export interface StickerPackClientOptions {
+  decryptManifest(key: string, encryptedManifest: string): Promise<any>;
+  base64Encoder(input: string): string;
+}
 
 
 /**
@@ -16,7 +25,7 @@ import {StickerPackManifest, StickerPackClient, StickerPackClientOptions} from '
  * The options for this factory constitute functionality that diverges between
  * Node and the browser, and is provided by each entrypoint accordingly.
  */
-export default function StickerPackClientFactory({decryptManifest, base64Encoder}: StickerPackClientOptions): StickerPackClient {
+export default function StickerPackClientFactory({decryptManifest, base64Encoder}: StickerPackClientOptions) {
   // ----- Members -------------------------------------------------------------
 
   /**
@@ -71,8 +80,10 @@ export default function StickerPackClientFactory({decryptManifest, base64Encoder
    * with a sticker pack manifest.
    */
   async function getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest> {
-    if (!stickerPackManifestCache.has(id)) {
-      stickerPackManifestCache.set(id, new Promise(async (resolve, reject) => {
+    const cacheKey = `${id}-${key}`;
+
+    if (!stickerPackManifestCache.has(cacheKey)) {
+      stickerPackManifestCache.set(cacheKey, new Promise(async (resolve, reject) => {
         try {
           const res = await axios({
             method: 'GET',
@@ -89,7 +100,7 @@ export default function StickerPackClientFactory({decryptManifest, base64Encoder
       }));
     }
 
-    return stickerPackManifestCache.get(id) as Promise<StickerPackManifest>;
+    return stickerPackManifestCache.get(cacheKey) as Promise<StickerPackManifest>;
   }
 
 
@@ -107,7 +118,7 @@ export default function StickerPackClientFactory({decryptManifest, base64Encoder
   async function getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'raw'): Promise<Uint8Array>;
   async function getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'base64'): Promise<string>;
   async function getStickerInPack(id: string, key: string, stickerId: number, encoding: 'raw' | 'base64' = 'raw') {
-    const cacheKey = `${id}-${stickerId}`;
+    const cacheKey = `${id}-${key}-${stickerId}`;
 
     if (!stickerImageCache.has(cacheKey)) {
       stickerImageCache.set(cacheKey, new Promise(async (resolve, reject) => {
