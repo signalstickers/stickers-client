@@ -46,7 +46,7 @@ sticker pack's decrypted manifest.
 
 <a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
 
-#### `getStickerInPack(id: string, key: string, stickerId: number, encoding: 'raw' | 'base64'): Promise<Uint8Array | string>`
+#### `getStickerInPack(id: string, key: string, stickerId: number, encoding? = 'raw' | 'base64): Promise<Uint8Array | string>`
 
 Provided a sticker pack ID, its key, and a sticker ID, returns a promise that
 resolves with the raw WebP image data for the indicated sticker.
@@ -54,9 +54,9 @@ resolves with the raw WebP image data for the indicated sticker.
 An optional `encoding` parameter may be provided to indicate the desired return
 type. The default value of `raw` will return raw WebP data as a `Uint8` Array.
 This is useful if further processing of the image data is necessary.
-Alternatively, if this is set to `base64`, a data-URI string will be returned
-instead. This string can be used directly as `src` attribute in an `<img>` tag,
-for example.
+Alternatively, if `base64` is provided, a data-URI `string` will be returned
+instead. This string can be used directly as the `src` attribute in an `<img>`
+tag, for example.
 
 <a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
 
