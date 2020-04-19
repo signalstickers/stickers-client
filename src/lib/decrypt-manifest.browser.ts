@@ -1,6 +1,6 @@
-// ===== Manifest Decryption (Browser) =========================================
-
 /**
+ * ===== Manifest Decryption (Browser) =========================================
+ *
  * This module is responsible for decrypting protocol buffer responses from
  * Signal in the browser using the SubtleCrypto API.
  *
@@ -32,6 +32,10 @@ function hexToArrayBuffer(hexString: string) {
  * See: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey
  */
 async function deriveKeys(encodedKey: string) {
+  if (!window?.crypto?.subtle) {
+    throw new Error('Environment does not support the SubtleCrypto API.');
+  }
+
   const hash = 'SHA-256';
   const length = 512;
   const salt = new ArrayBuffer(32);
@@ -67,6 +71,10 @@ async function deriveKeys(encodedKey: string) {
  * key.
  */
 export default async function decryptManifest(encodedKey: string, rawManifest: any) {
+  if (!window?.crypto?.subtle) {
+    throw new Error('Environment does not support the SubtleCrypto API.');
+  }
+
   const keys = await deriveKeys(encodedKey);
   const encryptedManifest = new Uint8Array(rawManifest);
   const theirIv = encryptedManifest.slice(0, 16);

@@ -7,17 +7,58 @@
 import axios from 'axios';
 import protobuf from 'protobufjs';
 import StickersProto from 'etc/stickers-proto';
-import {StickerPackManifest, StickerPackClient, StickerPackClientOptions} from 'etc/types';
+import {StickerPackManifest} from 'etc/types';
 
 
 /**
- * Provided a StickerClientOptions object, returns a StickerClient.
+ * Options object accepted by StickersClientFactory.
+ */
+export interface StickersClientOptions {
+  decryptManifest(key: string, encryptedManifest: string): Promise<any>;
+  base64Encoder(input: string): string;
+}
+
+
+/**
+ * Object returned by StickersClientFactory.
+ */
+export interface StickersClient {
+  /**
+   * Provided a sticker pack ID and key, queries the Signal API and resolves
+   * with a sticker pack manifest.
+   */
+  getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest>;
+
+  /**
+   * Provided a sticker pack ID, its key, and a sticker ID, queries the Signal
+   * API and resolves with the raw WebP image data for the indicated sticker.
+   *
+   * An optional `encoding` parameter may be provided to indicate the desired
+   * return type. The default value of `raw` will return raw WebP data as a
+   * Uint8 Array. This is useful if further processing of the image data is
+   * necessary. Alternatively, if this is set to `base64`, a data-URI string
+   * will be returned instead. This string can be used directly as "src"
+   * attribute in an <img> tag, for example.
+   */
+  getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'raw'): Promise<Uint8Array>;
+  getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'base64'): Promise<string>;
+
+  /**
+   * Provided a sticker pack ID, key, and sticker ID, returns the emoji
+   * associated with the sticker.
+   */
+  getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string>;
+}
+
+
+/**
+ * Provided a StickersClientOptions object, returns a StickersClient.
  *
  * The options for this factory constitute functionality that diverges between
  * Node and the browser, and is provided by each entrypoint accordingly.
  */
-export default function StickerPackClientFactory({decryptManifest, base64Encoder}: StickerPackClientOptions): StickerPackClient {
-  // ----- Members -------------------------------------------------------------
+export default function StickersClientFactory({decryptManifest, base64Encoder}: StickersClientOptions): StickersClient {
+  // ----- Private Members -----------------------------------------------------
 
   /**
    * @private
@@ -45,7 +86,7 @@ export default function StickerPackClientFactory({decryptManifest, base64Encoder
   const stickerImageCache = new Map<string, Promise<Uint8Array>>();
 
 
-  // ----- Methods -------------------------------------------------------------
+  // ----- Private Methods -----------------------------------------------------
 
   /**
    * @private
@@ -66,13 +107,13 @@ export default function StickerPackClientFactory({decryptManifest, base64Encoder
   }
 
 
-  /**
-   * Provided a sticker pack ID and key, queries the Signal API and resolves
-   * with a sticker pack manifest.
-   */
+  // ----- Public Methods ------------------------------------------------------
+
   async function getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest> {
-    if (!stickerPackManifestCache.has(id)) {
-      stickerPackManifestCache.set(id, new Promise(async (resolve, reject) => {
+    const cacheKey = `${id}-${key}`;
+
+    if (!stickerPackManifestCache.has(cacheKey)) {
+      stickerPackManifestCache.set(cacheKey, new Promise(async (resolve, reject) => {
         try {
           const res = await axios({
             method: 'GET',
@@ -89,25 +130,13 @@ export default function StickerPackClientFactory({decryptManifest, base64Encoder
       }));
     }
 
-    return stickerPackManifestCache.get(id) as Promise<StickerPackManifest>;
+    return stickerPackManifestCache.get(cacheKey) as Promise<StickerPackManifest>;
   }
 
-
-  /**
-   * Provided a sticker pack ID, its key, and a sticker ID, queries the Signal
-   * API and resolves with the raw WebP image data for the indicated sticker.
-   *
-   * An optional `encoding` parameter may be provided to indicate the desired
-   * return type. The default value of `raw` will return raw WebP data as a
-   * Uint8 Array. This is useful if further processing of the image data is
-   * necessary. Alternatively, if this is set to `base64`, a data-URI string
-   * will be returned instead. This string can be used directly as "src"
-   * attribute in an <img> tag, for example.
-   */
   async function getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'raw'): Promise<Uint8Array>;
   async function getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'base64'): Promise<string>;
   async function getStickerInPack(id: string, key: string, stickerId: number, encoding: 'raw' | 'base64' = 'raw') {
-    const cacheKey = `${id}-${stickerId}`;
+    const cacheKey = `${id}-${key}-${stickerId}`;
 
     if (!stickerImageCache.has(cacheKey)) {
       stickerImageCache.set(cacheKey, new Promise(async (resolve, reject) => {
@@ -138,11 +167,6 @@ export default function StickerPackClientFactory({decryptManifest, base64Encoder
     return `data:image/webp;base64,${base64Data}`;
   }
 
-
-  /**
-   * Provided a sticker pack ID, key, and sticker ID, returns the emoji
-   * associated with the sticker.
-   */
   async function getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string> {
     const packManifest = await getStickerPackManifest(id, key);
 
