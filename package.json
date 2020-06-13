@@ -1,7 +1,7 @@
 {
   "name": "@signalstickers/stickers-client",
   "version": "0.1.5",
-  "description": "Utilities for interacting with the Signal Sticker API for the browser and Node.",
+  "description": "Utilities for interacting with Signal's Sticker API for the browser and Node.",
   "license": "WTFPL",
   "contributors": [
     {
@@ -35,16 +35,16 @@
   "dependencies": {
     "axios": "^0.19.2",
     "js-crypto-hkdf": "^0.7.3",
-    "protobufjs": "^6.8.9"
+    "protobufjs": "^6.9.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.9.0",
-    "@babel/runtime": "^7.9.2",
-    "@darkobits/ts-unified": "^4.0.0",
+    "@babel/plugin-transform-runtime": "^7.10.1",
+    "@babel/runtime": "^7.10.2",
+    "@darkobits/ts-unified": "^5.0.0",
     "@types/axios": "^0.14.0",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.0",
     "@types/protobufjs": "^6.0.0",
-    "@types/uuid": "^7.0.2",
-    "uuid": "^7.0.3"
+    "@types/uuid": "^8.0.0",
+    "uuid": "^8.0.0"
   }
 }

@@ -18,8 +18,8 @@ function hexToArrayBuffer(hexString: string) {
   let tmpHexString = hexString;
 
   while (tmpHexString.length >= 2) {
-    result.push(parseInt(tmpHexString.substring(0, 2), 16));
-    tmpHexString = tmpHexString.substring(2, tmpHexString.length);
+    result.push(Number.parseInt(tmpHexString.slice(0, 2), 16));
+    tmpHexString = tmpHexString.slice(2);
   }
 
   return new Uint8Array(result);
@@ -81,7 +81,12 @@ export default async function decryptManifest(encodedKey: string, rawManifest: a
   const cipherTextBody = encryptedManifest.slice(16, encryptedManifest.byteLength - 32);
   const theirMac = encryptedManifest.slice(encryptedManifest.byteLength - 32, encryptedManifest.byteLength);
   const combinedCipherText = encryptedManifest.slice(0, encryptedManifest.byteLength - 32);
-  const macKey = await window.crypto.subtle.importKey('raw', keys[1], {name: 'HMAC', hash: {name: 'SHA-256'}}, false, ['verify', 'sign']);
+  const macKey = await window.crypto.subtle.importKey('raw', keys[1], {
+    name: 'HMAC',
+    hash: {
+      name: 'SHA-256'
+    }
+  }, false, ['verify', 'sign']);
   const isValid = await window.crypto.subtle.verify('HMAC', macKey, theirMac, combinedCipherText);
 
   if (!isValid) {

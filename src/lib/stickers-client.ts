@@ -40,7 +40,7 @@ export interface StickersClient {
    * will be returned instead. This string can be used directly as "src"
    * attribute in an <img> tag, for example.
    */
-  getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'raw'): Promise<Uint8Array>;
+  getStickerInPack(id: string, key: string, stickerId: number, encoding: 'raw'): Promise<Uint8Array>;
   getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'base64'): Promise<string>;
 
   /**
@@ -57,7 +57,10 @@ export interface StickersClient {
  * The options for this factory constitute functionality that diverges between
  * Node and the browser, and is provided by each entrypoint accordingly.
  */
-export default function StickersClientFactory({decryptManifest, base64Encoder}: StickersClientOptions): StickersClient {
+export default function StickersClientFactory(options: StickersClientOptions): StickersClient {
+  const {decryptManifest, base64Encoder} = options;
+
+
   // ----- Private Members -----------------------------------------------------
 
   /**
@@ -71,8 +74,8 @@ export default function StickersClientFactory({decryptManifest, base64Encoder}: 
   /**
    * @private
    *
-   * In-memory cache of sticker pack manifests. Helps us avoid making un-necessary
-   * network requests.
+   * In-memory cache of sticker pack manifests. Helps us avoid making
+   * un-necessary network requests.
    */
   const stickerPackManifestCache = new Map<string, Promise<StickerPackManifest>>();
 
@@ -94,7 +97,7 @@ export default function StickersClientFactory({decryptManifest, base64Encoder}: 
    * Provided a key and an encrypted manifest from the Signal API, resolves with
    * a decrypted and parsed manifest.
    */
-  async function parseManifest(key: string, rawManifest: any): Promise<StickerPackManifest> {
+  const parseManifest = async (key: string, rawManifest: any): Promise<StickerPackManifest> => {
     try {
       const manifest = await decryptManifest(key, rawManifest);
       const manifestData = new Uint8Array(manifest, 0, manifest.byteLength);
@@ -104,15 +107,16 @@ export default function StickersClientFactory({decryptManifest, base64Encoder}: 
       err.code = 'MANIFEST_PARSE';
       throw newErr;
     }
-  }
+  };
 
 
   // ----- Public Methods ------------------------------------------------------
 
-  async function getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest> {
+  const getStickerPackManifest: StickersClient['getStickerPackManifest'] = async (id, key) => {
     const cacheKey = `${id}-${key}`;
 
     if (!stickerPackManifestCache.has(cacheKey)) {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       stickerPackManifestCache.set(cacheKey, new Promise(async (resolve, reject) => {
         try {
           const res = await axios({
@@ -131,14 +135,20 @@ export default function StickersClientFactory({decryptManifest, base64Encoder}: 
     }
 
     return stickerPackManifestCache.get(cacheKey) as Promise<StickerPackManifest>;
-  }
+  };
 
-  async function getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'raw'): Promise<Uint8Array>;
-  async function getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'base64'): Promise<string>;
-  async function getStickerInPack(id: string, key: string, stickerId: number, encoding: 'raw' | 'base64' = 'raw') {
+  // N.B. We need to explicitly type this function's signature because it has
+  // overloads in the StickersClient definition.
+  const getStickerInPack: StickersClient['getStickerInPack'] = async (
+    id: string,
+    key: string,
+    stickerId: number,
+    encoding: 'raw' | 'base64' = 'raw'
+  ): Promise<any> => {
     const cacheKey = `${id}-${key}-${stickerId}`;
 
     if (!stickerImageCache.has(cacheKey)) {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       stickerImageCache.set(cacheKey, new Promise(async (resolve, reject) => {
         try {
           const res = await axios({
@@ -160,14 +170,14 @@ export default function StickersClientFactory({decryptManifest, base64Encoder}: 
     const rawImageData = await stickerImageCache.get(cacheKey);
 
     if (encoding === 'raw') {
-      return rawImageData;
+      return rawImageData as Uint8Array;
     }
 
     const base64Data = base64Encoder(String.fromCharCode(...rawImageData));
     return `data:image/webp;base64,${base64Data}`;
-  }
+  };
 
-  async function getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string> {
+  const getEmojiForSticker: StickersClient['getEmojiForSticker'] = async (id, key, stickerId) => {
     const packManifest = await getStickerPackManifest(id, key);
 
     const sticker = packManifest.stickers.find(curSticker => curSticker.id === stickerId);
@@ -177,7 +187,7 @@ export default function StickersClientFactory({decryptManifest, base64Encoder}: 
     }
 
     return sticker.emoji;
-  }
+  };
 
 
   return {

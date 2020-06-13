@@ -31,7 +31,7 @@ export default async function decryptManifest(encodedKey: string, rawManifest: a
   const [aesKey, hmacKey] = await deriveKeys(encodedKey);
 
   const theirIv = rawManifest.slice(0, 16);
-  const cipherTextBody = rawManifest.slice(16, rawManifest.length - 32);
+  const cipherTextBody = rawManifest.slice(16, - 32);
   const theirMac = rawManifest.slice(rawManifest.byteLength - 32, rawManifest.byteLength).toString('hex');
   const combinedCipherText = rawManifest.slice(0, rawManifest.byteLength - 32);
 

@@ -1,6 +1,6 @@
 module.exports = require('@darkobits/ts-unified/dist/config/jest')({
   coveragePathIgnorePatterns: [
-    '<rootDir>/src/etc',
+    '<rootDir>/src/etc'
   ],
   coverageThreshold: {
     global: {

@@ -42,7 +42,7 @@ describe('Stickers Client (Node)', () => {
       expect(axios).toHaveBeenCalledWith({
         method: 'GET',
         responseType: 'arraybuffer',
-        url: `https://cdn-ca.signal.org/stickers/${PACK_ID}/manifest.proto`,
+        url: `https://cdn-ca.signal.org/stickers/${PACK_ID}/manifest.proto`
       });
 
       expect(decryptManifest).toHaveBeenCalledWith(PACK_KEY, '___RAW_MANIFEST___');

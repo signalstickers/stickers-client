@@ -1,26 +1,9 @@
 {
   "extends": "./node_modules/@darkobits/ts-unified/dist/config/tsconfig.json",
   "compilerOptions": {
-    // Base directory to resolve non-relative module names.
     "baseUrl": ".",
-
-    "lib": [
-      "DOM"
-    ],
-
-    "target": "es5",
-
-    "downlevelIteration": true,
-
-    // Redirect output structure to this directory.
+    "lib": ["DOM"],
     "outDir": "dist",
-
-    // Specify path mapping to be computed relative to baseUrl option.
-    "paths": {
-      "*": [
-        "*",
-        "src/*"
-      ]
-    }
+    "paths": {"*": ["*", "src/*"]}
   }
 }
