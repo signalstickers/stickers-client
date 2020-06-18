@@ -1,6 +1,6 @@
 {
   "name": "@signalstickers/stickers-client",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "description": "Utilities for interacting with Signal's Sticker API for the browser and Node.",
   "license": "WTFPL",
   "contributors": [
