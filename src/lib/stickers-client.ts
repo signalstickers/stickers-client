@@ -40,8 +40,8 @@ export interface StickersClient {
    * will be returned instead. This string can be used directly as "src"
    * attribute in an <img> tag, for example.
    */
-  getStickerInPack(id: string, key: string, stickerId: number, encoding: 'raw'): Promise<Uint8Array>;
-  getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'base64'): Promise<string>;
+  getStickerInPack(id: string, key: string, stickerId: number, encoding?: 'raw'): Promise<Uint8Array>;
+  getStickerInPack(id: string, key: string, stickerId: number, encoding: 'base64'): Promise<string>;
 
   /**
    * Provided a sticker pack ID, key, and sticker ID, returns the emoji
