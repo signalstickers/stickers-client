@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/signalstickers/stickers-client/compare/v1.0.0...v1.0.1) (2020-06-18)
+
+
+### Bug Fixes
+
+* Fix overload type definition for getStickerInPack. ([11a8a10](https://github.com/signalstickers/stickers-client/commit/11a8a101d39a7c6085404c4178cbf946cc329b18))
+
 ## [1.0.0](https://github.com/signalstickers/stickers-client/compare/v0.1.5...v1.0.0) (2020-06-18)
 
 ### [0.1.5](https://github.com/signalstickers/stickers-client/compare/v0.1.4...v0.1.5) (2020-05-31)
