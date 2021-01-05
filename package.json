@@ -33,7 +33,7 @@
     "prepare": "nps prepare"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "js-crypto-hkdf": "^0.7.3",
     "protobufjs": "^6.9.0"
   },
