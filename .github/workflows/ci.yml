@@ -1,0 +1,42 @@
+name: CI/CD
+on:
+  - push
+jobs:
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Clone Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set Up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Use Dependencies Cache
+        id: dependencies-cache
+        uses: actions/cache@v1
+        with:
+          key: dependencies-${{ hashFiles('package-lock.json') }}
+          path: node_modules
+
+      - name: Install Dependencies
+        if: steps.dependencies-cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+
+      - name: Build Project
+        run: npx nps build
+
+      - name: Run Unit Tests
+        run: npx nps test.coverage
+
+      - name: Upload Coverage Report
+        run: bash <(curl -s https://codecov.io/bash)

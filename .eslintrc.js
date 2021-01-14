@@ -1,5 +1,6 @@
 module.exports = {
-  extends: [
-    require.resolve('@darkobits/ts-unified/dist/config/eslint')
-  ]
+  extends: require('@darkobits/ts').eslint,
+  rules: {
+    '@typescript-eslint/unbound-method': 'off'
+  }
 };

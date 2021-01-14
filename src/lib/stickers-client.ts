@@ -167,10 +167,10 @@ export default function StickersClientFactory(options: StickersClientOptions): S
       }));
     }
 
-    const rawImageData = await stickerImageCache.get(cacheKey);
+    const rawImageData = await stickerImageCache.get(cacheKey) as Uint8Array;
 
     if (encoding === 'raw') {
-      return rawImageData as Uint8Array;
+      return rawImageData;
     }
 
     const base64Data = base64Encoder(String.fromCharCode(...rawImageData));
