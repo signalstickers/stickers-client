@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/signalstickers/stickers-client/compare/v1.0.1...v1.0.2) (2021-01-14)
+
+
+### 🏗 Chores
+
+* Update dependencies. ([c62c78b](https://github.com/signalstickers/stickers-client/commit/c62c78be3c1ffee227dc37085b4da2e3dc45d507))
+
 ### [1.0.1](https://github.com/signalstickers/stickers-client/compare/v1.0.0...v1.0.1) (2020-06-18)
 
 
