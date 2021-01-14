@@ -1,49 +1,65 @@
 <a href="#top" id="top">
-  <img src="https://user-images.githubusercontent.com/441546/104583384-e9198d80-5615-11eb-99fe-b473c840282c.png" style="max-width: 100%;"></<img>
+  <img src="https://user-images.githubusercontent.com/441546/104589390-a6a87e80-561e-11eb-9bd1-278d46d48b74.png" style="max-width: 100%;"></<img>
 </a>
 <p align="center">
   <a href="https://www.npmjs.com/package/@signalstickers/stickers-client"><img src="https://img.shields.io/npm/v/@signalstickers/stickers-client.svg?style=flat-square"></a>
-  <a href="https://github.com/darkobits/stickers-client/actions?query=workflow%3ACI"><img src="https://img.shields.io/github/workflow/status/darkobits/stickers-client/CI/master?style=flat-square"></a>
-  <a href="https://app.codecov.io/gh/darkobits/stickers-client/branch/master"><img src="https://img.shields.io/codecov/c/github/darkobits/stickers-client/master?style=flat-square"></a>
-  <a href="https://david-dm.org/darkobits/stickers-client"><img src="https://img.shields.io/david/darkobits/stickers-client.svg?style=flat-square"></a>
+  <a href="https://github.com/signalstickers/stickers-client/actions"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fsignalstickers%2Fstickers-client%2Fbadge%3Fref%3Dmaster&style=flat-square&label=build&logo=none"></a>
+  <a href="https://david-dm.org/signalstickers/stickers-client"><img src="https://img.shields.io/david/signalstickers/stickers-client.svg?style=flat-square"></a>
   <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/conventional%20commits-1.0.0-027dc6.svg?style=flat-square"></a>
 </p>
 
-# Rationale
+## Rationale
 
-Communicating with Signal's API is non-trivial because it uses encrypted [protocol buffers](https://en.wikipedia.org/wiki/Protocol_Buffers).
-Responses must be parsed accordingly and their contents decrypted using some rather esoteric
-cryptography. This package aims to make using the stickers API as straightforward as possible by
-providing a small set of functions that work in both the browser and Node.
+Communicating with Signal's Sticker API can be somewhat non-trivial because it uses encrypted
+[protocol buffers](https://en.wikipedia.org/wiki/Protocol_Buffers). Raw responses must be decrypted
+using some rather esoteric cryptography, resulting in a high-friction experience for the average
+developer. This package aims to make using the Stickers API as straightforward as possible by providing
+a small set of utility functions that work in both the browser and Node.
 
-# Install
+## Install
 
 ```
 npm i @signalstickers/stickers-client
 ```
 
-# Use
+## Use
 
 It is assumed that users of this package have a general understanding of how stickers work in Signal.
 For more information on that topic, see [this article](https://support.signal.org/hc/en-us/articles/360031836512-Stickers).
 
-This package can be used in both browser and Node environments. If you plan to use it in the browser,
-make sure you are using a bundler that supports the [`browser` `package.json` field](https://github.com/defunctzombie/package-browser-field-spec).
+This package can be used in both browser and Node. If you plan to use it in the browser, make sure you
+are using a bundler that supports the [`browser` `package.json` field](https://github.com/defunctzombie/package-browser-field-spec).
 
-Because sticker packs are immutable, responses from Signal can be safely cached indefinitely. As such,
-this package implements a basic in-memory cache. This reduces the amount of superfluous networks
-requests made.
+Because sticker packs in Signal are [immutable](https://en.wikipedia.org/wiki/Immutable_object),
+a response from Signal (be it for a sticker pack or an individual sticker) can be safely cached
+indefinitely. As such, this package implements a basic in-memory cache. This means your application can
+invoke these functions without any consideration for performance, and the library will ensure that no
+superfluous network requests are made.
+
+### API
 
 This package has the following named exports:
 
-#### `getStickerPackManifest(id: string, key: string): Promise<StickerPackManifest>`
+```ts
+async getStickerPackManifest(
+  id: string,
+  key: string
+) => Promise<StickerPackManifest>
+```
 
 Provided a sticker pack ID and its key, returns a promise that resolves with the sticker pack's
 decrypted manifest.
 
 <a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
 
-#### `getStickerInPack(id: string, key: string, stickerId: number, encoding? = 'raw' | 'base64): Promise<Uint8Array | string>`
+```ts
+async getStickerInPack(
+  id: string,
+  key: string,
+  stickerId: number,
+  encoding? = 'raw' | 'base64'
+) => Promise<Uint8Array | string>
+```
 
 Provided a sticker pack ID, its key, and a sticker ID, returns a promise that resolves with the raw WebP
 image data for the indicated sticker.
@@ -55,13 +71,17 @@ This string can be used directly as the `src` attribute in an `<img>` tag, for e
 
 <a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
 
-#### `getEmojiForSticker(id: string, key: string, stickerId: number): Promise<string>`
+```ts
+async getEmojiForSticker(
+  id: string,
+  key: string,
+  stickerId: number
+) => Promise<string>
+```
 
 Provided a sticker pack ID, its key, and sticker ID, returns the emoji associated with the sticker.
 
-<a href="#top"><img src="https://user-images.githubusercontent.com/441546/72722991-8988bf00-3b34-11ea-8fff-b9b1dfaa0a53.png"></a>
-
-**Example**
+### Example
 
 In this example, we'll create a simple React component that will render a single sticker. It will accept
 a sticker pack's ID and key as well as the ID of the sticker to render as props. We will use a one-time
@@ -72,8 +92,8 @@ store the result of `getStickerInPack` outside the component's state. If it is e
 remounted in the future with the same props, no additional network requests will be made.
 
 ```tsx
-import React, {useEffect, useState} from 'react';
-import {getStickerInPack, getEmojiForSticker} from '@signalstickers/stickers-client';
+import React from 'react';
+import { getStickerInPack, getEmojiForSticker } from '@signalstickers/stickers-client';
 
 export interface Props {
   packId: string;
@@ -81,11 +101,11 @@ export interface Props {
   stickerId: number;
 }
 
-const StickerComponent: React.FunctionComponent<Props> = ({packId, packKey, stickerId}) => {
-  const [stickerData, setStickerData] = useState();
-  const [stickerEmoji, setStickerEmoji] = useState();
+const Sticker: React.FunctionComponent<Props> = ({ packId, packKey, stickerId }) => {
+  const [stickerData, setStickerData] = React.useState();
+  const [stickerEmoji, setStickerEmoji] = React.useState();
 
-  useEffect(() => {
+  React.useEffect(() => {
     getStickerInPack(packId, packKey, stickerId, 'base64').then(setStickerData);
     getEmojiForSticker(packId, packKey, stickerId).then(setStickerEmoji);
   }, []);
@@ -99,5 +119,23 @@ const StickerComponent: React.FunctionComponent<Props> = ({packId, packKey, stic
   );
 };
 
-export default StickerComponent;
+export default Sticker;
+```
+
+This component could then be used thusly:
+
+```tsx
+import Sticker from './Sticker';
+
+
+export default () => {
+  // This will render an image tag containing the indicated sticker.
+  return (
+    <Sticker
+      packId="7be8291c4007cc73868818992596cc24"
+      packKey="ca808607b39f0f1d860a8460128d3ba4022fb0536ddadf58f7e8ff8ac7ddaf56"
+      stickerId={1}
+    >
+  )
+}
 ```

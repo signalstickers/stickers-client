@@ -3,8 +3,6 @@
   "compilerOptions": {
     "baseUrl": "src",
     "outDir": "dist",
-    "lib": [
-      "DOM"
-    ]
+    "lib": ["DOM"]
   }
 }
