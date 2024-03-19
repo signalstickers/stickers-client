@@ -6,6 +6,7 @@
  */
 import axios from 'axios';
 import protobuf from 'protobufjs';
+
 import StickersProto from 'etc/stickers-proto';
 import {StickerPackManifest} from 'etc/types';
 
@@ -102,7 +103,7 @@ export default function StickersClientFactory(options: StickersClientOptions): S
       const manifest = await decryptManifest(key, rawManifest);
       const manifestData = new Uint8Array(manifest, 0, manifest.byteLength);
       return packMessage.decode(manifestData) as unknown as StickerPackManifest;
-    } catch (err) {
+    } catch (err: any) {
       const newErr = new Error(`[parseManifest] ${err.stack}`);
       err.code = 'MANIFEST_PARSE';
       throw newErr;
@@ -128,7 +129,7 @@ export default function StickersClientFactory(options: StickersClientOptions): S
           const manifest = await parseManifest(key, res.data);
 
           resolve(manifest);
-        } catch (err) {
+        } catch (err: any) {
           reject(err);
         }
       }));
@@ -161,7 +162,7 @@ export default function StickersClientFactory(options: StickersClientOptions): S
           const rawWebpData = new Uint8Array(stickerManifest, 0, stickerManifest.byteLength);
 
           resolve(rawWebpData);
-        } catch (err) {
+        } catch (err: any) {
           reject(err);
         }
       }));
@@ -173,7 +174,7 @@ export default function StickersClientFactory(options: StickersClientOptions): S
       return rawImageData;
     }
 
-    const base64Data = base64Encoder(String.fromCharCode(...rawImageData));
+    const base64Data = base64Encoder(String.fromCodePoint(...rawImageData));
     return `data:image/webp;base64,${base64Data}`;
   };
 
