@@ -1,24 +1,30 @@
-import axios, {AxiosRequestConfig} from 'axios';
-import {v4 as uuid} from 'uuid';
+import axios, { AxiosRequestConfig } from 'axios';
+import { v4 as uuid } from 'uuid';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-import StickersClientFactory, {StickersClient} from './stickers-client';
+import StickersClientFactory, { StickersClient } from './stickers-client';
 
 
-jest.mock('axios', () => jest.fn(async (requestConfig: AxiosRequestConfig) => {
-  if (requestConfig.url?.match(/manifest\.proto/g)) {
-    return Promise.resolve({data: '___RAW_MANIFEST___'});
-  }
+vi.mock('axios', () => {
+  return {
+    default: vi.fn(async (requestConfig: AxiosRequestConfig) => {
+      if (requestConfig.url?.match(/manifest\.proto/g)) {
+        return {data: '___RAW_MANIFEST___'};
+      }
 
-  if (requestConfig.url?.match(/\/full\//g)) {
-    return Promise.resolve({data: '___RAW_STICKER_DATA___'});
-  }
+      if (requestConfig.url?.match(/\/full\//g)) {
+        return {data: '___RAW_STICKER_DATA___'};
+      }
 
-  return Promise.reject();
-}));
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw undefined;
+    })
+  };
+});
 
 
 describe('Stickers Client (Node)', () => {
-  const decryptManifest = jest.fn(async () => '___DECRYPTED_MANIFEST___');
+  const decryptManifest = vi.fn(async () => '___DECRYPTED_MANIFEST___');
   let client: StickersClient;
 
   beforeEach(() => {
@@ -29,7 +35,7 @@ describe('Stickers Client (Node)', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getStickerPackManifest', () => {
@@ -111,7 +117,7 @@ describe('Stickers Client (Node)', () => {
     it('should query Signal', async () => {
       try {
         await client.getEmojiForSticker(PACK_ID, PACK_KEY, STICKER_ID);
-      } catch (err) {
+      } catch (err: any) {
         // We're going to encounter an error here because we're returning an
         // empty sticker pack.
         expect(err.message).toMatch(`Sticker pack ${PACK_ID} has no sticker with ID ${STICKER_ID}.`);

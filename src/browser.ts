@@ -1,6 +1,6 @@
-import StickersClientFactory from 'lib/stickers-client';
 import decryptManifest from 'lib/decrypt-manifest.browser';
-import {StickerPackManifest} from 'etc/types';
+import StickersClientFactory from 'lib/stickers-client';
+
 
 /**
  * Create the exports we will use for the browser client by passing the browser
@@ -16,9 +16,12 @@ const {
   base64Encoder: btoa
 });
 
+
 export {
-  StickerPackManifest,
   getStickerPackManifest,
   getStickerInPack,
   getEmojiForSticker
 };
+
+
+export type { StickerPackManifest } from 'etc/types';
