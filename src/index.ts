@@ -1,6 +1,6 @@
-import StickersClientFactory from 'lib/stickers-client';
 import decryptManifest from 'lib/decrypt-manifest.node';
-import {StickerPackManifest} from 'etc/types';
+import StickersClientFactory from 'lib/stickers-client';
+
 
 /**
  * Create the exports we will use for the Node client by passing the Node
@@ -16,9 +16,12 @@ const {
   base64Encoder: input => Buffer.from(input).toString('base64')
 });
 
+
 export {
-  StickerPackManifest,
   getStickerPackManifest,
   getStickerInPack,
   getEmojiForSticker
 };
+
+
+export type { StickerPackManifest } from 'etc/types';

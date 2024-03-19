@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "description": "Utilities for interacting with Signal's Sticker API for the browser and Node.",
   "license": "WTFPL",
+  "type": "module",
   "contributors": [
     {
       "name": "Romain Ricard",
@@ -26,19 +27,19 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "nps prepare"
+    "build": "nr build",
+    "test": "nr test",
+    "prepare": "nr prepare",
+    "help": "nr --scripts"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "js-crypto-hkdf": "^1.0.0",
-    "protobufjs": "^6.10.1"
+    "axios": "^1.6.8",
+    "js-crypto-hkdf": "^1.0.7",
+    "protobufjs": "^7.2.6"
   },
   "devDependencies": {
-    "@darkobits/ts": "^0.2.2",
-    "@types/axios": "^0.14.0",
-    "@types/jest": "^26.0.14",
-    "@types/protobufjs": "^6.0.0",
-    "@types/uuid": "^8.3.0",
-    "uuid": "^8.3.1"
+    "@darkobits/ts": "^0.20.7",
+    "@types/uuid": "^9.0.8",
+    "uuid": "^9.0.1"
   }
 }

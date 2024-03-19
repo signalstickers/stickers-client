@@ -1,42 +1,41 @@
-name: CI/CD
+name: ci
 on:
-  - push
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+env:
+  FORCE_COLOR: 3
+concurrency:
+  group: ${{ github.ref_name }}
+  # Only cancel concurrent builds when we are not on the default branch. This
+  # way, if a commit breaks the default branch, we can more easily determine
+  # which commit caused the failure.
+  cancel-in-progress: ${{ github.ref_name != github.event.repository.default_branch }}
 jobs:
   ci:
-    name: Build & Test
+    name: ci
+    # Skip building tags; an identical job for the commit to which the tag
+    # points will be triggered anyway.
+    if: github.ref_type != 'tag'
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-
       - name: Clone Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Set Up Node
-        uses: actions/setup-node@v1
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 14
-
-      - name: Use Dependencies Cache
-        id: dependencies-cache
-        uses: actions/cache@v1
-        with:
-          key: dependencies-${{ hashFiles('package-lock.json') }}
-          path: node_modules
-
+          node-version: 20
+          cache: npm
       - name: Install Dependencies
-        if: steps.dependencies-cache.outputs.cache-hit != 'true'
-        run: npm ci --ignore-scripts
-
+        run: npm clean-install
       - name: Build Project
-        run: npx nps build
-
-      - name: Run Unit Tests
-        run: npx nps test.coverage
-
+        run: npx nr build
+      - name: Run Tests
+        run: npx nr test.coverage
       - name: Upload Coverage Report
-        run: bash <(curl -s https://codecov.io/bash)
+        uses: codecov/codecov-action@v4
