@@ -1,11 +1,37 @@
-<a href="#top" id="top">
-  <img src="https://user-images.githubusercontent.com/441546/104589390-a6a87e80-561e-11eb-9bd1-278d46d48b74.png" style="max-width: 100%;"></<img>
-</a>
 <p align="center">
-  <a href="https://www.npmjs.com/package/@signalstickers/stickers-client"><img src="https://img.shields.io/npm/v/@signalstickers/stickers-client.svg?style=flat-square"></a>
-  <a href="https://github.com/signalstickers/stickers-client/actions"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fsignalstickers%2Fstickers-client%2Fbadge%3Fref%3Dmaster&style=flat-square&label=build&logo=none"></a>
-  <a href="https://david-dm.org/signalstickers/stickers-client"><img src="https://img.shields.io/david/signalstickers/stickers-client.svg?style=flat-square"></a>
-  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/conventional%20commits-1.0.0-027dc6.svg?style=flat-square"></a>
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://github.com/signalstickers/stickers-client/assets/441546/d74bbce3-5306-4c82-900f-78b8dd9bfa38"
+      width="100%"
+    >
+    <img
+      src="https://github.com/signalstickers/stickers-client/assets/441546/5d991acd-46a2-4a49-9871-d5bbe565c0c8"
+      width="100%"
+    >
+  </picture>
+</p>
+<p align="center">
+  <a
+    href="https://www.npmjs.com/package/@signalstickers/stickers-client"
+  ><img
+    src="https://img.shields.io/npm/v/@signalstickers/stickers-client.svg?style=flat-square"
+  ></a>
+  <a
+    href="https://github.com/signalstickers/stickers-client/actions?query=workflow%3Aci"
+  ><img
+    src="https://img.shields.io/github/actions/workflow/status/signalstickers/stickers-client/ci.yml?style=flat-square"
+  ></a>
+  <a
+    href="https://depfu.com/repos/github/signalstickers/stickers-client"
+  ><img
+    src="https://img.shields.io/depfu/signalstickers/stickers-client?style=flat-square"
+  ></a>
+  <a
+    href="https://conventionalcommits.org"
+  ><img
+    src="https://img.shields.io/static/v1?label=commits&message=conventional&style=flat-square&color=398AFB"
+  ></a>
 </p>
 
 ## Rationale
@@ -32,9 +58,8 @@ are using a bundler that supports the [`browser` `package.json` field](https://g
 
 Because sticker packs in Signal are [immutable](https://en.wikipedia.org/wiki/Immutable_object),
 a response from Signal (be it for a sticker pack or an individual sticker) can be safely cached
-indefinitely. As such, this package implements a basic in-memory cache. This means your application can
-invoke these functions without any consideration for performance, and the library will ensure that no
-superfluous network requests are made.
+indefinitely. As such, this package implements a basic in-memory cache, so you should not need to
+implement caching or memoization yourself. ✨
 
 ### API
 
@@ -101,25 +126,21 @@ export interface Props {
   stickerId: number;
 }
 
-const Sticker: React.FunctionComponent<Props> = ({ packId, packKey, stickerId }) => {
+export default function Sticker({ packId, packKey, stickerId }: Props) {
   const [stickerData, setStickerData] = React.useState();
   const [stickerEmoji, setStickerEmoji] = React.useState();
 
   React.useEffect(() => {
     getStickerInPack(packId, packKey, stickerId, 'base64').then(setStickerData);
     getEmojiForSticker(packId, packKey, stickerId).then(setStickerEmoji);
-  }, []);
+  }, [packId, packKey, stickerId]);
 
-  if (!stickerData || !stickerEmoji) {
-    return null;
-  }
+  if (!stickerData || !stickerEmoji) return null;
 
   return (
     <img src={stickerData} alt={stickerEmoji} />
   );
 };
-
-export default Sticker;
 ```
 
 This component could then be used thusly:
